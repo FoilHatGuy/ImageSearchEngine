@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NeuroView</title>
+    <style>
+    .thumbnail{max-width: 50px;
+    max-height: 50px;
+    padding: 5px;}
+
+    .img{max-width: 350px;
+    max-height: 350px;
+    padding: 5px;
+    border: 1px solid silver;
+    border-radius: 15px 15px;}
+</style>
+</head>
+<body>
+<script>
+    window.catalogue = [{% for id in ids%}'{{id}}', {%endfor%}]
+    window.imgsSetName = {{IMG_SRC}}
+
+</script>
+<div>
+    {% for img in pics %}
+    <img class="thumbnail" src="data:image/jpeg;base64, {{img}}" alt="img">
+    {% endfor %}
+</div>
+<form action="/"
+      enctype="multipart/form-data" method="post">
+    <p>
+        Please choose an image to recognize:<br>
+        <input type="file" name="file" size="40">
+    </p>
+    <div>
+        <input type="submit" value="Send">
+    </div>
+</form>
+<p>
+    It took {{time}} seconds to complete.
+</p>
+<!--<img src="{{temp_route}}" alt="img1">-->
+<img class="img" src="data:image/jpeg;base64, {{temp}}" alt="img1">
+<img class="img" src="{{result_route}}" alt="img2">
+<p>
+    Name: {{img_name}}
+</p>
+<p>
+    Description: {{desc}}
+</p>
+</body>
+</html>
