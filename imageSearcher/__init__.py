@@ -1,2 +1,2 @@
-from . import detector
+from . import imageSearcher
 from . import exceptions

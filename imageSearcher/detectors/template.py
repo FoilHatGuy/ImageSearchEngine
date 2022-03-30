@@ -3,7 +3,8 @@ class DetectorTM:
         pass
 
     def process(self, image):
-        pass
+        img_id = ""
+        return img_id
 
     def add(self):
         pass

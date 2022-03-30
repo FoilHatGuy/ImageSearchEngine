@@ -1,6 +1,6 @@
 class InterfaceError(Exception):
     def __init__(self):
-        self.message = "Detector facade error occurred"
+        self.message = "ImageSearcher facade error occurred"
         pass
 
 
@@ -17,3 +17,5 @@ class PPError(InterfaceError):
 class PPDataMissing(PPError):
     def __init__(self, details="unknown reasons"):
         self.message = f"Image was not received due to {details}"
+
+

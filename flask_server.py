@@ -64,7 +64,9 @@ def upload_info():
     f = request.files['file']
     # print(str(f))
     f.save(f'{C.PREROOT}imgs/{name}.{f.filename.split(".")[1]}')
-    imgs = [str(base64.b64encode(open(f"{C.PREROOT}imgs/{C.IMG_SRC}/src_imgs/{f}", "rb").read()))[2:-1] for f in os.listdir(f'{C.PREROOT}imgs/{C.IMG_SRC}/src_imgs') if re.match(".*\.jpeg", f)]
+    imgs = [str(base64.b64encode(open(f"{C.PREROOT}imgs/{C.IMG_SRC}/src_imgs/{f}", "rb").read()))[2:-1]
+            for f
+            in os.listdir(f'{C.PREROOT}imgs/{C.IMG_SRC}/src_imgs') if re.match(".*\.jpeg", f)]
     catalogue = [f.split('.')[0] for f in os.listdir(f'{C.PREROOT}imgs/{C.IMG_SRC}/src_imgs') if re.match(".*\.jpeg", f)]
     # catalogue.encode('utf-8')
     result, time, img_name, desc, src = keras_part.model.predict(name, f.filename.split(".")[1])

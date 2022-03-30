@@ -1,0 +1,9 @@
+{
+        "inputSizes": [400, 400],
+        "PPResultSizes": [240, 240],
+        "workingFolder": "./data/rusdata/0",
+        "localDBFolder": "./data/rusdata/detData",
+        "tempFolder": "./data/rusdata/temp",
+        "host": "localhost",
+        "numOfBest": 5
+    }

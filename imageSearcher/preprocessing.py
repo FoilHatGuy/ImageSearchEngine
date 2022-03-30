@@ -9,8 +9,8 @@ def imageSearchAndRestore(src, config):
     if src is None:
         raise ex.PPDataMissing
     # Convert image to gray and blur it
-    src = cv.resize(src, (620, 480))
-    cv.imshow('Source', src)
+    # src = cv.resize(src, )
+    # cv.imshow('Source', src)
 
     # set variables
     resultSize = [240, 240]
@@ -97,4 +97,3 @@ def imageSearchAndRestore(src, config):
         raise ex.PPError
         # cv.imshow('ContourMAX', contrs_img)
         # cv.imshow('Contours', drawing)
-        return None

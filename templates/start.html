@@ -2,30 +2,54 @@
 <head>
     <meta charset="UTF-8">
     <title>NeuroView</title>
-    <style> .thumbnail{max-width: 50px;
+    <style>
+    .thumbnail{max-width: 50px;
     max-height: 50px;
-    padding: 5px;}</style>
+    padding: 5px;}
+
+    .img{max-width: 350px;
+    max-height: 350px;
+    padding: 5px;
+    border: 1px solid silver;
+    border-radius: 15px 15px;}
+</style>
 </head>
 <body>
 <script>
-    window.catalogue = [{% for id in ids%}'{{id}}', {%endfor%}]
-    window.imgsSetName = {{IMG_SRC}}
+    window.imgsSetName = "{{IMG_SRC}}"
 
 </script>
-<div>
-    {% for img in pics %}
-    <img class="thumbnail" src="data:image/jpeg;base64, {{img}}" alt="img">
-    {% endfor %}
-</div>
+<p>Working directory: {{IMG_SRC}}</p>
+
 <form action="/"
       enctype="multipart/form-data" method="post">
     <p>
         Please choose an image to recognize:<br>
         <input type="file" name="file" size="40">
     </p>
+
+<!--    <label for="det_type">-->
+    <label for="det_type">Select the detector type</label>
+    <select id="det_type" name="det_type" required>
+        {%for opt in detectors%}
+        <option value="{{opt}}">{{opt}}</option>
+        {%endfor%}
+    </select>
+<!--    </label>-->
     <div>
         <input type="submit" value="Send">
     </div>
 </form>
+
+<div class="content">
+    {% block content %} {% endblock %}
+</div>
+
+<div>
+    {% for img in pics %}
+    <img class=thumbnail src="data:image/jpeg;base64, {{img}}" alt="img">
+    {% endfor %}
+</div>
+
 </body>
 </html>
