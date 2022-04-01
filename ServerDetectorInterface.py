@@ -43,16 +43,7 @@ class ServerDetectorInterface:
                                                      self.config["tempFolder"],
                                                      f"{name}.jpeg"))  #{f.filename.split('.')[1]}
             f.save(filename)
-            # print(request.form)
-            # print(request.files)
             response = self.searchEngine.search({"image": filename, **request.form})  # respond with {id: ""}
-            # print(response)
-            # response["result_file"] = f"{response['best']}.{f.filename.split('.')[1]}"
-            # print(os.path.normpath(
-            #             os.path.join(
-            #                 self.config["cwd"], self.config["workingFolder"], f"{response['best']}.jpeg"
-            #             )
-            #         ))
             response["result_file"] = str(base64.b64encode(
                 open(
                     os.path.normpath(
@@ -67,13 +58,12 @@ class ServerDetectorInterface:
                             self.config["cwd"], self.config["tempFolder"], filename
                         )
                     ), "rb").read()))[2:-1]
-            # response["src_file"] = f
             if len(response["desc"]) < 5:
                 response["desc"] = 'no description'
             os.remove(os.path.normpath(os.path.join(self.config["cwd"], self.config["tempFolder"], filename)))
             return response
         else:
-            return None
+            return None  #make exception raise bc no file
 
     def tester(self, query):
         try:

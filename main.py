@@ -15,11 +15,10 @@ app = flask.Flask(__name__)
 
 @app.route("/", methods=["POST"])
 def upload_info():
-    # response = searchEngine.search(request)
-    # in
     response = instance.search(request)
 
     return render_template('result.html',
+                           status=response["status"],
                            src_file=response["src_file"],
                            img_name=response["name"],
                            desc=response["desc"],
@@ -29,6 +28,7 @@ def upload_info():
                            time=response["time"],
                            IMG_SRC=instance.config['workingFolder'],
                            detectors=instance.getDets())
+
 
 @app.route("/")
 def hello():
@@ -48,7 +48,6 @@ def hello():
 if __name__ == "__main__":
     with open("config.json") as f:
         config = json.load(f)
-    # print(config)
     instance = ServerDetectorInterface(config)
     img = cv.imread("3.jpg")
     query = {"type": "AE", "image": img}
