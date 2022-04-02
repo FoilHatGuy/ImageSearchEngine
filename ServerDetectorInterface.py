@@ -18,11 +18,11 @@ class ServerDetectorInterface:
         self.config["cwd"] = os.getcwd()
         self.logger = logging.getLogger()  # logger initialisation
         self.searchEngine = imageSearcher.imageSearcher.ImageSearcher(config)  # imageSearcher instancing
-        self.imgs = [str(base64.b64encode(open(f"{self.config['workingFolder']}{s}{f}",
-                                               "rb").read()))[2:-1]
-                     for f in os.listdir(self.config['workingFolder']) if re.match(".*\.jpeg", f)]
-        self.catalogue = [f.split('.')[0] for f in os.listdir(self.config['workingFolder']) if
-                          re.match(".*\.jpeg", f)]
+        # self.imgs = [str(base64.b64encode(open(f"{self.config['workingFolder']}{s}{f}",
+        #                                        "rb").read()))[2:-1]
+        #              for f in os.listdir(self.config['workingFolder']) if re.match(".*\.jpeg", f)]
+        # self.catalogue = [f.split('.')[0] for f in os.listdir(self.config['workingFolder']) if
+        #                   re.match(".*\.jpeg", f)]
         # print(self.catalogue)
 
     def add(self):
@@ -48,8 +48,10 @@ class ServerDetectorInterface:
                 open(
                     os.path.normpath(
                         os.path.join(
-                            self.config["cwd"], self.config["workingFolder"], f"{response['best']}.jpeg"
-                        )
+                            self.config["cwd"],
+                            self.config["workingFolder"],
+                            str(response["folder"]),
+                            f"{response['best']}.jpeg")
                     ), "rb").read()))[2:-1]
             response["src_file"] = str(base64.b64encode(
                 open(

@@ -11,7 +11,13 @@ from os.path import join as pathJoin
 
 class ImageSearcher:
     def __init__(self, config):
-        self.data = pd.read_csv(pathJoin(config["workingFolder"], "index.csv"), index_col="id").fillna('')
+        self.data = pd.read_csv(pathJoin(config["workingFolder"], '0', "index.csv"),
+                                         index_col="id").fillna('')
+
+        for dir in os.listdir(config["workingFolder"])[1:]:
+            self.data = self.data.append(pd.read_csv(pathJoin(config["workingFolder"], dir, "index.csv"),
+                                         index_col="id").fillna(''))
+        print(self.data)
         self.config = config
         self.preprocessing = preprocessing.imageSearchAndRestore
         self.detectors = {  # "AE": detectors.autoencoder.DetectorAE(self.config, self.data),
@@ -43,6 +49,7 @@ class ImageSearcher:
                     response["desc"] = self.data.loc[response["best"]]["desc"]
                     response["name"] = self.data.loc[response["best"]]["name"]
                     response["time"] = time.time() - startingTime
+                    response["folder"] = self.data.loc[response["best"]]["folder"]
                     return response
                 except det.exceptions.NoMatchesFound:
                     pass

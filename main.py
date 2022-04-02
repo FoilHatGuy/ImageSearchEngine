@@ -18,12 +18,12 @@ def upload_info():
     response = instance.search(request)
 
     return render_template('result.html',
-                           status=response["status"],
+                           # status=response["status"],
                            src_file=response["src_file"],
                            img_name=response["name"],
                            desc=response["desc"],
-                           pics=instance.imgs,
-                           ids=instance.catalogue,
+                           # pics=instance.imgs,
+                           # ids=instance.catalogue,
                            result_file=response["result_file"],
                            time=response["time"],
                            IMG_SRC=instance.config['workingFolder'],
@@ -34,8 +34,8 @@ def upload_info():
 def hello():
     # catalogue.encode('utf-16')
     return render_template('start.html',
-                           pics=instance.imgs,
-                           ids=instance.catalogue,
+                           # pics=instance.imgs,
+                           # ids=instance.catalogue,
                            IMG_SRC=instance.config['workingFolder'],
                            detectors=instance.getDets())
 

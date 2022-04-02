@@ -3,7 +3,7 @@ import requests
 import os
 import re
 import sys
-
+path = '../data/rusdata2/'
 NUMBER = 1000
 headers = {'Accept': 'application/json',
            'X-API-KEY': 'd02270983aea10827ccd92e7fa874b03f556784ebff02839faa71bdc713a3490'}
@@ -12,20 +12,23 @@ url = initial_url
 data = {"eventType": "AAS_PORTAL_START", "data": {"uid": "hfe3hf45huf33545", "aid": "1", "vid": "1"}}
 values = {'f': '{"data.museum.name":{"$search":"русский"},"data.typology.name":{"$search":"Живопись"}}', 'l': str(NUMBER)}
 stop = False
-if 'last.txt' not in os.listdir('../scripts'):
+if 'last.txt' not in os.listdir('.'):
     response = requests.get(url, params=values, headers=headers).json()
 else:
     with open('last.txt', 'r') as f:
         response = requests.get(f.read(), headers=headers).json()
 
 files = [int(f) for f in os.listdir('../data') if
-         os.path.isdir('../rusdata/' + f) and re.match(r'\d*', f)]
+         os.path.isdir(path + f) and re.match(r'\d*', f)]
 print(files)
-num = max(files)+1 if len(files) > 0 else 0
-
+# num = max(files)+1 if len(files) > 0 else 0
+num = 0
 while not stop and num > -1:
-    df = pd.DataFrame(columns=['id', 'name', 'artist', 'url', 'height', 'width', 'desc'])
-    os.mkdir('../rusdata/'+str(num))
+    df = pd.DataFrame(columns=['id', 'name', 'artist', 'url', 'height', 'width', 'desc', 'folder'])
+    try:
+        os.mkdir(path+str(num))
+    except:
+        pass
 
     if 'nextPage' in response.keys():
         url = response['nextPage']
@@ -39,12 +42,13 @@ while not stop and num > -1:
                             'name': item['data']['name'] if 'name' in item['data'].keys() else None,
                             'desc': item['data']['description'] if 'description' in item['data'].keys() else None,
                             'height': item['data']['height'] if 'height' in item['data'].keys() else None,
-                            'width': item['data']['width'] if 'width' in item['data'].keys() else None},
+                            'width': item['data']['width'] if 'width' in item['data'].keys() else None,
+                            'folder': num},
                            ignore_index=True)
-    # print(df)
+    print(df)
     # stop = True
     print(num)
-    df.to_csv('../rusdata/'+str(num)+'/index.csv', index=False)
+    df.to_csv(path+str(num)+'/index.csv', index=False)
     with open('last.txt', 'w') as f:
         f.write(url)
     response = requests.get(url, headers=headers).json()

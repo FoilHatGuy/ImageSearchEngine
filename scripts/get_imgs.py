@@ -7,10 +7,10 @@ import re
 from PIL import Image
 
 SIZE = (500, 500)
-
-for dir in [int(f) for f in os.listdir('../data/rusdata') if os.path.isdir('../rusdata/' + f) and re.match(r'\d*', f)][0:1]:
+path = '../data/rusdata2/'
+for dir in [int(f) for f in os.listdir(path) if os.path.isdir(path + f) and re.match(r'\d*', f)][1:]:
     print(dir)
-    df = pd.read_csv('../rusdata/'+str(dir)+'/index.csv')
+    df = pd.read_csv(path+str(dir)+'/index.csv')
     # print(df.head())
     for x in list(df.iterrows()):
         # print(x[1])
@@ -30,9 +30,9 @@ for dir in [int(f) for f in os.listdir('../data/rusdata') if os.path.isdir('../r
                 # print(df.index.size)
                 pass
             # print(r.headers["Content-Length"])
-            with open(f"../data/rusdata/{str(dir)}/{x[1]['id']}.jpeg", 'wb') as f: #{r.headers['Content-Type'].split('/')[1]}
+            with open(path+f"{str(dir)}/{x[1]['id']}.jpeg", 'wb') as f: #{r.headers['Content-Type'].split('/')[1]}
                 r.raw.decode_content = True
-                with open('../data/rusdata/tmp.jpeg', 'w+b') as tmp:
+                with open(path+'tmp.jpeg', 'w+b') as tmp:
                     shutil.copyfileobj(r.raw, tmp)
                     img = Image.open(tmp).convert('RGB')
 
@@ -41,7 +41,7 @@ for dir in [int(f) for f in os.listdir('../data/rusdata') if os.path.isdir('../r
                     # print(quantifier)
                     sizes = int(img.size[0] * quantifier), int(img.size[1] * quantifier)
                     img.resize(sizes).save(f)
-                os.remove('../data/rusdata/tmp.jpeg')
-    df.to_csv('../rusdata/'+str(dir)+'/index.csv')
+                os.remove(path+ 'tmp.jpeg')
+    df.to_csv(path+str(dir)+'/index.csv')
 
 
