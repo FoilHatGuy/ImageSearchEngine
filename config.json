@@ -1,6 +1,6 @@
 {
         "inputSizes": [400, 400],
-        "PPResultSizes": [240, 240],
+        "PPResultSizes": [400, 400],
         "workingFolder": "./data/rusdata2",
         "localDBFolder": "./data/detData",
         "tempFolder": "./data/temp",

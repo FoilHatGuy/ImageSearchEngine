@@ -12,7 +12,7 @@ from os.path import join as pathJoin
 class ImageSearcher:
     def __init__(self, config):
         self.data = pd.read_csv(pathJoin(config["workingFolder"], '0', "index.csv"),
-                                         index_col="id").fillna('')
+                                index_col="id").fillna('')
 
         for dir in os.listdir(config["workingFolder"])[1:]:
             self.data = self.data.append(pd.read_csv(pathJoin(config["workingFolder"], dir, "index.csv"),
@@ -20,20 +20,16 @@ class ImageSearcher:
         print(self.data)
         self.config = config
         self.preprocessing = preprocessing.imageSearchAndRestore
-        self.detectors = {  # "AE": detectors.autoencoder.DetectorAE(self.config, self.data),
-                          # "TM": detectors.template.DetectorTM(self.config, self.data),
+        self.detectors = {"AE": det.autoencoder.DetectorAE(self.config, self.data),
+                          # "TM": det.template.DetectorTM(self.config, self.data),
                           "KP": det.keypoint.DetectorKP(self.config, self.data)}
 
     def reindex(self):
         for val in self.detectors.values():
             val.reindex(self.data.index)
-        pass
 
     def getDets(self):
         return self.detectors.keys()
-
-    def add(self):
-        pass
 
     def search(self, data):
         if data["det_type"] in self.detectors.keys():
@@ -57,3 +53,7 @@ class ImageSearcher:
                 raise ex.PPDataMissing("image not received in Module")
         else:
             raise ex.DetectorMissing(data["det_type"], self.detectors.keys())
+
+    def add(self):
+        pass
+

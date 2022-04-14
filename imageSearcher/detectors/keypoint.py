@@ -9,7 +9,7 @@ import sys
 
 class DetectorKP:
     def __init__(self, config, data):
-        self.kpDescriptor = cv.ORB_create(500)
+        self.kpDescriptor = cv.ORB_create()
         self.config = config
         self.db = pd.DataFrame()
         self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "KP.pkl"))
@@ -22,7 +22,12 @@ class DetectorKP:
         self.db.info(memory_usage="deep")
 
         FLANN_INDEX_KDTREE = 1
-        index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        FLANN_INDEX_LSH = 6
+        # index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+        index_params = dict(algorithm=FLANN_INDEX_LSH,
+                            table_number=6,  # 12
+                            key_size=12,  # 20
+                            multi_probe_level=1)  # 2)
         search_params = dict(checks=50)  # or pass empty dictionary
         self.matcher = cv.FlannBasedMatcher(index_params, search_params)
 
@@ -34,7 +39,7 @@ class DetectorKP:
             img = cv.imread(os.path.normpath(os.path.join(self.config["cwd"],
                                                           self.config["workingFolder"],
                                                           str(data['folder']),
-                                                          id+".jpeg")))
+                                                          id + ".jpeg")))
 
             new_data.append({"id": id, "des": self.searchKP(img)})
             cnt += 1
@@ -52,6 +57,7 @@ class DetectorKP:
     def findInDB(self, des1):
         conf_grade = sorted(list(self.db.applymap(lambda x: self.KPMatch(des1, x))
                                  .itertuples(name=None)), key=lambda x: x[1], reverse=True)
+        print(conf_grade)
         return conf_grade
 
     def searchKP(self, img):
@@ -63,13 +69,18 @@ class DetectorKP:
 
     def KPMatch(self, des1, des2):
         cnt = 0
-        knn_matches = self.matcher.knnMatch(des1.astype(np.float32), des2.astype(np.float32), k=2)
-        for i, (m, n) in enumerate(knn_matches):
-            if m.distance < .8 * n.distance:
-                cnt +=1
+        # knn_matches = self.matcher.knnMatch(des1.astype(np.float32), des2.astype(np.float32), k=2)
+        knn_matches = self.matcher.knnMatch(des1, des2, k=2)
+
+        for i, pair in enumerate(knn_matches):
+            if len(pair) < 2:
+                continue
+            else:
+                m, n = pair
+                if m.distance < 0.6 * n.distance:
+                    cnt += 1
         confidence = (cnt / len(knn_matches)) if len(knn_matches) > 0 else 0
         return confidence
 
     def add(self):
         pass
-

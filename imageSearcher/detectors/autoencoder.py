@@ -7,19 +7,19 @@ import cv2 as cv
 
 class DetectorAE:
     def __init__(self, config, data):
-
-        self.model = None
-
-        self.config = config
-        self.db = pd.DataFrame()
-        self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "AE.pkl"))
-        try:
-            self.db = pd.read_pickle(self.csvName)
-        except FileNotFoundError:
-            self.reindex(data.index)
-        self.db = self.db.set_index("id")
-        # self.db.applymap(lambda x: x.astype(np.uint8))
-        self.db.info(memory_usage="deep")
+        pass
+        # self.model = None
+        #
+        # self.config = config
+        # self.db = pd.DataFrame()
+        # self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "AE.pkl"))
+        # try:
+        #     self.db = pd.read_pickle(self.csvName)
+        # except FileNotFoundError:
+        #     self.reindex(data.index)
+        # self.db = self.db.set_index("id")
+        # # self.db.applymap(lambda x: x.astype(np.uint8))
+        # self.db.info(memory_usage="deep")
 
 
     def reindex(self, data):
