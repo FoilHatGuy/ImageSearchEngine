@@ -14,7 +14,6 @@ from os import sep as s
 
 class ServerDetectorInterface:
     def __init__(self, config):  # image data storage
-        # self.cleanup_data()  # database cleanup, no picture - no data
         self.config = config  # importing config from outer scope
         self.config["cwd"] = os.getcwd()
         self.logger = logging.getLogger()  # logger initialisation
@@ -25,6 +24,7 @@ class ServerDetectorInterface:
         # self.catalogue = [f.split('.')[0] for f in os.listdir(self.config['workingFolder']) if
         #                   re.match(".*\.jpeg", f)]
         # print(self.catalogue)
+        # self.cleanup_data()  # database cleanup, no picture - no data
 
     def add(self):
         pass
@@ -76,6 +76,22 @@ class ServerDetectorInterface:
         # self.app = flask.Flask(__name__)
         pass
 
-    # def cleanup_data(self):
-    #     for f in os.listdir(self.config["workingDirectory"]):
+    def cleanup_data(self):
+
+        # for dir in os.listdir(self.config["workingFolder"]):
+        dir = ""
+        data = pd.read_csv(os.path.join(self.config["workingFolder"], dir, "index.csv"), index_col="id")
+        dirContents = os.listdir(os.path.join(self.config["workingFolder"], dir))
+        print(dir)
+        # print(dirContents)
+
+        for line_id, line in data.iterrows():
+            # print(line.index())
+            filename = line_id + ".jpeg"
+            if filename not in dirContents:
+                data = data.drop(line_id)
+
+        data.to_csv(os.path.join(self.config["workingFolder"], dir, "index.csv"))
+        print(data)
+
 

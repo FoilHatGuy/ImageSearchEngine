@@ -3,7 +3,7 @@ import requests
 import os
 import re
 import sys
-path = '../data/rusdata2/'
+path = '../data/rusdata/'
 NUMBER = 1000
 headers = {'Accept': 'application/json',
            'X-API-KEY': 'd02270983aea10827ccd92e7fa874b03f556784ebff02839faa71bdc713a3490'}

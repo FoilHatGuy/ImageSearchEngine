@@ -7,7 +7,7 @@ import re
 from PIL import Image
 
 SIZE = (500, 500)
-path = '../data/rusdata2/'
+path = '../data/rusdata/'
 for dir in [int(f) for f in os.listdir(path) if os.path.isdir(path + f) and re.match(r'\d*', f)][1:]:
     print(dir)
     df = pd.read_csv(path+str(dir)+'/index.csv')

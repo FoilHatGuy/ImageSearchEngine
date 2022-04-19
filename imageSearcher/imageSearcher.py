@@ -13,11 +13,16 @@ class ImageSearcher:
     def __init__(self, config):
         self.data = pd.read_csv(pathJoin(config["workingFolder"], '0', "index.csv"),
                                 index_col="id").fillna('')
-
-        for dir in os.listdir(config["workingFolder"])[1:]:
-            self.data = self.data.append(pd.read_csv(pathJoin(config["workingFolder"], dir, "index.csv"),
-                                         index_col="id").fillna(''))
-        print(self.data)
+        # self.data["folder"] = "0"
+        try:
+            for dir in os.listdir(config["workingFolder"])[1:]:
+                loaded_data = pd.read_csv(pathJoin(config["workingFolder"], dir, "index.csv"),
+                            index_col="id").fillna('')
+                # loaded_data["folder"] = str(dir)
+                self.data = self.data.append(loaded_data)
+        except FileNotFoundError:
+            pass
+        print(self.data.columns)
         self.config = config
         self.preprocessing = preprocessing.imageSearchAndRestore
         self.detectors = {"AE": det.autoencoder.DetectorAE(self.config, self.data),
