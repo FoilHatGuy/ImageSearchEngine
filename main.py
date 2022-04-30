@@ -31,6 +31,12 @@ def img_load():
                            detectors=instance.getDets())
 
 
+@app.route("/reindex", methods=["GET"])
+def reindex():
+    instance.reindex()
+    return flask.redirect("/")
+
+
 @app.route("/")
 def index():
     # catalogue.encode('utf-16')

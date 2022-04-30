@@ -24,6 +24,7 @@ class ServerDetectorInterface:
         # self.catalogue = [f.split('.')[0] for f in os.listdir(self.config['workingFolder']) if
         #                   re.match(".*\.jpeg", f)]
         # print(self.catalogue)
+        #
         # self.cleanup_data()  # database cleanup, no picture - no data
 
     def add(self):
@@ -45,6 +46,14 @@ class ServerDetectorInterface:
                                                      f"{name}.jpeg"))  #{f.filename.split('.')[1]}
             f.save(filename)
             response = self.searchEngine.search({"image": filename, **request.form})  # respond with {id: ""}
+            # print("response", response["folder"])
+            # print("normpath:", os.path.normpath(
+            #             os.path.join(
+            #                 self.config["cwd"],
+            #                 self.config["workingFolder"],
+            #                 str(response["folder"]),
+            #                 f"{response['best']}.jpeg")
+            #         ))
             response["result_file"] = str(base64.b64encode(
                 open(
                     os.path.normpath(
@@ -83,7 +92,7 @@ class ServerDetectorInterface:
         data = pd.read_csv(os.path.join(self.config["workingFolder"], dir, "index.csv"), index_col="id")
         dirContents = os.listdir(os.path.join(self.config["workingFolder"], dir))
         print(dir)
-        # print(dirContents)
+        # print(dir_contents)
 
         for line_id, line in data.iterrows():
             # print(line.index())

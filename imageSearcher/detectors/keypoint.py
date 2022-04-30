@@ -47,17 +47,18 @@ class DetectorKP:
         self.db.applymap(lambda x: x.astype(np.uint8))
         new_data.to_pickle(self.csvName)
         self.db = new_data
-        print("Reindex done!")
+        print("KP Reindex done!")
 
     def search(self, img):
         batch = self.findInDB(self.searchKP(img))
-        return {"bestBatch": list([x[1] for x in batch[:self.config["numOfBest"]]]),
+        # print("batch", batch)
+        return {"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
                 "best": batch[0][0]}
 
     def findInDB(self, des1):
         conf_grade = sorted(list(self.db.applymap(lambda x: self.KPMatch(des1, x))
                                  .itertuples(name=None)), key=lambda x: x[1], reverse=True)
-        print(conf_grade)
+        print("KP:", conf_grade)
         return conf_grade
 
     def searchKP(self, img):

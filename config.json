@@ -1,7 +1,7 @@
 {
         "inputSizes": [400, 400],
         "PPResultSizes": [400, 400],
-        "workingFolder": "./data/rusdata",
+        "workingFolder": "./data/train_set",
         "localDBFolder": "./data/detData",
         "tempFolder": "./data/temp",
         "host": "localhost",

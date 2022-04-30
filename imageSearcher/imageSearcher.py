@@ -22,7 +22,7 @@ class ImageSearcher:
                 self.data = self.data.append(loaded_data)
         except FileNotFoundError:
             pass
-        print(self.data.columns)
+        # print(self.data.columns)
         self.config = config
         self.preprocessing = preprocessing.imageSearchAndRestore
         self.detectors = {"AE": det.autoencoder.DetectorAE(self.config, self.data),
@@ -31,7 +31,7 @@ class ImageSearcher:
 
     def reindex(self):
         for val in self.detectors.values():
-            val.reindex(self.data.index)
+            val.reindex(self.data)
 
     def getDets(self):
         return self.detectors.keys()
@@ -44,9 +44,11 @@ class ImageSearcher:
                 img = cv.resize(img, self.config["inputSizes"])
                 try:
                     try:
+                        # raise ex.PPError
                         response = self.detectors.get(data["det_type"]).search(self.preprocessing(img, self.config))
                     except ex.PPError:
                         response = self.detectors.get(data["det_type"]).search(img)
+                    # print(self.data.loc[response["best"]])
                     response["desc"] = self.data.loc[response["best"]]["desc"]
                     response["name"] = self.data.loc[response["best"]]["name"]
                     response["time"] = time.time() - startingTime

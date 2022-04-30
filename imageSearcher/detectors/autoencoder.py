@@ -8,33 +8,34 @@ from . import CVAE
 
 class DetectorAE:
     def __init__(self, config, data):
+        self.searching = False
 
-        self.model = CVAE.CVAE(decoder=False)
+        self.model = CVAE.CVAE(decoder=False, training=False)
 
         self.config = config
         self.db = pd.DataFrame()
         self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "AE.pkl"))
 
         try:
-            self.db = pd.read_pickle(self.csvName)
-        except FileNotFoundError:
+            # self.db = pd.read_pickle(self.csvName)
+            # self.db = self.db.set_index("id")
             self.reindex(data)
-        self.db = self.db.set_index("id")
+        except Exception:
+            self.reindex(data)
         # self.db.applymap(lambda x: x.astype(np.uint8))
-        # self.db.info(memory_usage="deep")
-
+        print(self.db)
 
     def reindex(self, data):
         cnt = 0
         new_data = []
         # print(data["folder"].iteritems())
-        for id, data in data.iterrows():
-            # print(data['folder'])
+        for idx, data in data.iterrows():
+            # print(idx, data)
             img = cv.imread(os.path.normpath(os.path.join(self.config["cwd"],
                                                           self.config["workingFolder"],
                                                           str(data['folder']),
-                                                          id + ".jpeg")))
-            cv.resize(img, (256, 256), interpolation=cv.INTER_LINEAR)
+                                                          idx + ".jpeg")))
+
             # print(id, folder)
             # print(os.path.normpath(os.path.normpath(os.path.join(self.config["cwd"],
             #                                               self.config["workingFolder"],
@@ -42,36 +43,61 @@ class DetectorAE:
             #                                               id + ".jpeg"))))
             # print(img)
             # print("img")
-            new_data.append({"id": id, "par": self.encode(img)})
+            params = self.encode(img)
+            # if idx == "5c3e0bd393fa687ca4df9156":
+            #     self.searching = False
+            #     cv.imshow("in db", img)
+            #     cv.waitKey()
+            #     print(params)
+            new_data.append({"id": idx, "par": params})
+
             cnt += 1
-        new_data = pd.DataFrame(new_data, columns=["id", "par"])
-        self.db.applymap(lambda x: x.astype(np.uint8))
+        new_data = pd.DataFrame(new_data, columns=["id", "par"]).set_index("id")
+        # print(list(new_data.loc["5c3e0bd393fa687ca4df9156"]))
+        # self.db.applymap(lambda x: (x.numpy()*255).astype(np.uint8))
         new_data.to_pickle(self.csvName)
         self.db = new_data
+        print("REINDEX AE DONE")
 
     def search(self, img):
-        batch = self.findInDB(self.searchKP(img))
-        return {"bestBatch": list([x[1] for x in batch[:self.config["numOfBest"]]]),
-                "best": batch[0][0]}
+        self.searching = True
+        # input_id = "5c3e0a6393fa687ca4cade53" #input("id: ")
+        params = self.encode(img)
+        # with open("ids.txt", "w") as f:
+            # p
+        # print(list(self.db.loc[input_id]))
+        # print(params)
+        batch = self.findInDB(params)
+        # print(batch)
+        # print(list(self.db.loc[batch[0][0]]))
+        self.searching = False
+        return {"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
+                "best":      batch[0][0]}
 
     def findInDB(self, des1):
-        conf_grade = sorted(list(self.db.applymap(lambda x: self.KPMatch(des1, x))
-                                 .itertuples(name=None)), key=lambda x: x[1], reverse=True)
+        # print(self.db)
+        # print(des1)
+        # print(self.db.loc["5c3e0bd393fa687ca4df9156"])
+
+        f = self.db.applymap(lambda x: x-des1)
+        # print(f)
+        # r = f.applymap(lambda x: np.linalg.norm(x*(x-np.min(x) > np.mean(x)-np.min(x)*0.3), 2))
+        r = f.applymap(lambda x: np.linalg.norm(x, 2))
+        # print(r)
+        # print(list(r.itertuples(name=None)))
+        conf_grade = sorted(list(r.itertuples(name=None)), key=lambda x: x[1], reverse=False)
+        print("AE:", conf_grade)
+        # print(des1)
+        # print(self.db.loc[conf_grade[0][0]])
         return conf_grade
 
     def encode(self, img):
         # cv.normalize(img, None, alpha=255, norm_type=cv.NORM_MINMAX)
-        img = (img/255).astype("float32")
-        print(img)
-        parameters, _ = self.model.encode(img/255)
-        return parameters
-
-    def KPMatch(self, des1, des2):
-        cnt = 0
-        knn_matches = self.matcher.knnMatch(des1.astype(np.float32), des2.astype(np.float32), k=2)
-        for i, (m, n) in enumerate(knn_matches):
-            if m.distance < .8 * n.distance:
-                cnt += 1
-        confidence = (cnt / len(knn_matches)) if len(knn_matches) > 0 else 0
-        return confidence
-
+        img = np.resize((cv.resize(img, (256, 256)) / 255).astype("float32"), (1, 256, 256, 3))
+        # print(img.shape)
+        if self.searching:
+            print(img[0].shape)
+            cv.imshow("name", img[0])
+            cv.waitKey()
+        parameters, _ = self.model.encode(img)
+        return parameters.numpy().flatten()

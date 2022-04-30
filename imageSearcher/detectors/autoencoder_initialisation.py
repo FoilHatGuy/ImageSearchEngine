@@ -4,7 +4,7 @@ from IPython import display
 
 import json
 import time
-from . import CVAE
+import CVAE
 
 # import imageio
 import matplotlib.pyplot as plt
@@ -16,8 +16,8 @@ import tensorflow as tf
 # np_config.enable_numpy_behavior()
 # # tf.config.run_functions_eagerly(True)
 
-with open("../config.json") as f:
-    config = json.load(f)
+# with open("../config.json") as f:
+#     config = json.load(f)
 
 
 def generate_sample(predictions):
@@ -35,22 +35,24 @@ def generate_sample(predictions):
 
 optimizer = tf.keras.optimizers.Adam(1e-4)
 
-epochs = 50
-start_epoch = 1
+epochs = 200
+start_epoch = 107
 # set the dimensionality of the latent space to a plane for visualization later
 num_examples_to_generate = 16
 
 # keeping the random vector constant for generation (prediction) so
 # it will be easier to see the improvement.
-model = CVAE.CVAE()
+model = CVAE.CVAE(training=True)
 random_vector_for_generation = tf.random.normal(
         shape=[num_examples_to_generate, model.latent_dim])
 
 train_size = 1000
-batch_size = 8
+batch_size = 16
 test_size = 200
 
-datadir = "../data/rusdata2"
+datadir = "../../data/train_set"
+print(os.path.abspath(datadir))
+
 dataset_params = {"directory":  datadir,
                   "shuffle":    False,
                   "image_size": (256, 256),
@@ -81,14 +83,14 @@ print("WHOLE DATASET BEFORE AUGMENTATION:", images_dataset)
 #     tf.keras.utils.array_to_img(test_sample[0]).show()
 #     break
 
-images_dataset = images_dataset.cache().repeat(5).map(
+images_dataset = images_dataset.cache().repeat(20).map(
         lambda image: image / 255
 ).map(
         lambda img: tf.image.convert_image_dtype(img, tf.float32)
 ).map(
         lambda image: tf.image.random_flip_left_right(image)
 ).map(
-        lambda image: tf.image.random_contrast(image, lower=0.4, upper=1)
+        lambda image: tf.image.random_contrast(image, lower=0.7, upper=1)
 ).shuffle(500)
 # #
 # for test_sample in images_dataset.take(1):
