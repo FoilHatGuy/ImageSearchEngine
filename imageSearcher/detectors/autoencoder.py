@@ -14,12 +14,15 @@ class DetectorAE:
 
         self.config = config
         self.db = pd.DataFrame()
-        self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "AE.pkl"))
+        setname = self.config["workingFolder"].split("/")[-1]
+        self.csvName = os.path.normpath(os.path.join(self.config["cwd"],
+                                                     self.config["localDBFolder"],
+                                                     setname+"_AE.pkl"))
 
         try:
-            # self.db = pd.read_pickle(self.csvName)
+            self.db = pd.read_pickle(self.csvName)
             # self.db = self.db.set_index("id")
-            self.reindex(data)
+            # self.reindex(data)
         except Exception:
             self.reindex(data)
         # self.db.applymap(lambda x: x.astype(np.uint8))
@@ -71,8 +74,9 @@ class DetectorAE:
         # print(batch)
         # print(list(self.db.loc[batch[0][0]]))
         self.searching = False
-        return {"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
-                "best":      batch[0][0]}
+        return {#"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
+                "best":      batch[0][0],
+                "confidence": batch[0][1]}
 
     def findInDB(self, des1):
         # print(self.db)
@@ -86,7 +90,9 @@ class DetectorAE:
         # print(r)
         # print(list(r.itertuples(name=None)))
         conf_grade = sorted(list(r.itertuples(name=None)), key=lambda x: x[1], reverse=False)
-        print("AE:", conf_grade)
+
+        # print("AE:", conf_grade)
+
         # print(des1)
         # print(self.db.loc[conf_grade[0][0]])
         return conf_grade
@@ -95,9 +101,9 @@ class DetectorAE:
         # cv.normalize(img, None, alpha=255, norm_type=cv.NORM_MINMAX)
         img = np.resize((cv.resize(img, (256, 256)) / 255).astype("float32"), (1, 256, 256, 3))
         # print(img.shape)
-        if self.searching:
-            print(img[0].shape)
-            cv.imshow("name", img[0])
-            cv.waitKey()
+        # if self.searching:
+        #     print(img[0].shape)
+        #     cv.imshow("name", img[0])
+        #     cv.waitKey()
         parameters, _ = self.model.encode(img)
         return parameters.numpy().flatten()

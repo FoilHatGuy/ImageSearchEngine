@@ -36,7 +36,9 @@ class ServerDetectorInterface:
     def getDets(self):
         return self.searchEngine.getDets()
 
-    def search(self, request):
+    def search(self, request, testing=False):
+        # JSON = request.get_json()
+        # print(request.form)
         name = int(datetime.datetime.utcnow().timestamp() * 1000000) + random.randint(0, 1000)
         f = request.files['file']
         response = {}
@@ -45,6 +47,7 @@ class ServerDetectorInterface:
                                                      self.config["tempFolder"],
                                                      f"{name}.jpeg"))  #{f.filename.split('.')[1]}
             f.save(filename)
+            # print(filename)
             response = self.searchEngine.search({"image": filename, **request.form})  # respond with {id: ""}
             # print("response", response["folder"])
             # print("normpath:", os.path.normpath(
@@ -54,28 +57,30 @@ class ServerDetectorInterface:
             #                 str(response["folder"]),
             #                 f"{response['best']}.jpeg")
             #         ))
-            response["result_file"] = str(base64.b64encode(
-                open(
-                    os.path.normpath(
-                        os.path.join(
-                            self.config["cwd"],
-                            self.config["workingFolder"],
-                            str(response["folder"]),
-                            f"{response['best']}.jpeg")
-                    ), "rb").read()))[2:-1]
-            response["src_file"] = str(base64.b64encode(
-                open(
-                    os.path.normpath(
-                        os.path.join(
-                            self.config["cwd"], self.config["tempFolder"], filename
-                        )
-                    ), "rb").read()))[2:-1]
-            if len(response["desc"]) < 5:
-                response["desc"] = 'no description'
-            os.remove(os.path.normpath(os.path.join(self.config["cwd"], self.config["tempFolder"], filename)))
+            if not testing:
+                response["src_file"] = str(base64.b64encode(
+                    open(
+                        os.path.normpath(
+                            os.path.join(
+                                self.config["cwd"], self.config["tempFolder"], filename
+                            )
+                        ), "rb").read()))[2:-1]
+                response["result_file"] = str(base64.b64encode(
+                    open(
+                        os.path.normpath(
+                            os.path.join(
+                                self.config["cwd"],
+                                self.config["workingFolder"],
+                                str(response["folder"]),
+                                f"{response['best']}.jpeg")
+                        ), "rb").read()))[2:-1]
+                if len(response["desc"]) < 5:
+                    response["desc"] = 'no description'
+            # os.remove(os.path.normpath(os.path.join(self.config["cwd"], self.config["tempFolder"], filename)))
+            print(response["best"], response["name"], response["time"], response["confidence"])
             return response
         else:
-            return None  #make exception raise bc no file
+            return {}  #make exception raise bc no file
 
     def tester(self, query):
         try:

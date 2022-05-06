@@ -1,9 +1,9 @@
 {
         "inputSizes": [400, 400],
         "PPResultSizes": [400, 400],
-        "workingFolder": "./data/train_set",
+        "workingFolder": "./data/rusmuseum",
         "localDBFolder": "./data/detData",
         "tempFolder": "./data/temp",
-        "host": "localhost",
+        "host": "192.168.10.35",
         "numOfBest": 5
     }

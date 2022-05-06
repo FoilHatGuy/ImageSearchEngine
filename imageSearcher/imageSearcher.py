@@ -43,21 +43,47 @@ class ImageSearcher:
                 img = cv.imread(data["image"])
                 img = cv.resize(img, self.config["inputSizes"])
                 try:
-                    try:
-                        # raise ex.PPError
-                        response = self.detectors.get(data["det_type"]).search(self.preprocessing(img, self.config))
-                    except ex.PPError:
-                        response = self.detectors.get(data["det_type"]).search(img)
+                    response = self.detectors.get(data["det_type"]).search(img)
+                    # try:
+                    #     # raise ex.PPError
+                    #     response = self.detectors.get(data["det_type"]).search(self.preprocessing(img, self.config))
+                    # except ex.PPError:
+                    #     response = self.detectors.get(data["det_type"]).search(img)
                     # print(self.data.loc[response["best"]])
                     response["desc"] = self.data.loc[response["best"]]["desc"]
                     response["name"] = self.data.loc[response["best"]]["name"]
-                    response["time"] = time.time() - startingTime
+                    response["time"] = float(time.time() - startingTime)
+                    response["confidence"] = float(response["confidence"])
                     response["folder"] = self.data.loc[response["best"]]["folder"]
                     return response
                 except det.exceptions.NoMatchesFound:
                     pass
             else:
                 raise ex.PPDataMissing("image not received in Module")
+        elif data["det_type"] == "all":
+            total_response = {}
+            for name, dt in self.detectors.items():
+                if data["image"]:
+                    startingTime = time.time()
+                    img = cv.imread(data["image"])
+                    img = cv.resize(img, self.config["inputSizes"])
+                    try:
+                        response = dt.search(img)
+                        # try:
+                        #     # raise ex.PPError
+                        #     response = self.detectors.get(data["det_type"]).search(self.preprocessing(img, self.config))
+                        # except ex.PPError:
+                        #     response = self.detectors.get(data["det_type"]).search(img)
+                        # print(self.data.loc[response["best"]])
+                        # response["desc"] = self.data.loc[response["best"]]["desc"]
+                        # response["name"] = self.data.loc[response["best"]]["name"]
+                        response["time"] = float(time.time() - startingTime)
+                        response["confidence"] = float(response["confidence"])
+                        # response["folder"] = self.data.loc[response["best"]]["folder"]
+                        total_response[name] = response
+                    except det.exceptions.NoMatchesFound:
+                        pass
+            return total_response
         else:
             raise ex.DetectorMissing(data["det_type"], self.detectors.keys())
 

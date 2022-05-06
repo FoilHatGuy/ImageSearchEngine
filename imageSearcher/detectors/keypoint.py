@@ -12,7 +12,11 @@ class DetectorKP:
         self.kpDescriptor = cv.ORB_create()
         self.config = config
         self.db = pd.DataFrame()
-        self.csvName = os.path.normpath(os.path.join(self.config["cwd"], self.config["localDBFolder"], "KP.pkl"))
+
+        setname = self.config["workingFolder"].split("/")[-1]
+        self.csvName = os.path.normpath(os.path.join(self.config["cwd"],
+                                                     self.config["localDBFolder"],
+                                                     setname+"_KP.pkl"))
         try:
             self.db = pd.read_pickle(self.csvName)
         except FileNotFoundError:
@@ -52,13 +56,14 @@ class DetectorKP:
     def search(self, img):
         batch = self.findInDB(self.searchKP(img))
         # print("batch", batch)
-        return {"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
-                "best": batch[0][0]}
+        return {#"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
+                "best": batch[0][0],
+                "confidence": batch[0][1]}
 
     def findInDB(self, des1):
         conf_grade = sorted(list(self.db.applymap(lambda x: self.KPMatch(des1, x))
                                  .itertuples(name=None)), key=lambda x: x[1], reverse=True)
-        print("KP:", conf_grade)
+        # print("KP:", conf_grade)
         return conf_grade
 
     def searchKP(self, img):
@@ -70,6 +75,8 @@ class DetectorKP:
 
     def KPMatch(self, des1, des2):
         cnt = 0
+        # print(des1)
+        # print(des2)
         # knn_matches = self.matcher.knnMatch(des1.astype(np.float32), des2.astype(np.float32), k=2)
         knn_matches = self.matcher.knnMatch(des1, des2, k=2)
 

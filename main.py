@@ -31,6 +31,18 @@ def img_load():
                            detectors=instance.getDets())
 
 
+@app.route("/testing", methods=["POST"])
+def testing():
+    # print(request)
+    # return {"I": "Love you"}
+    response = instance.search(request, testing=True)
+    return str(response)
+
+
+@app.route("/check", methods=["GET", "POST"])
+def check():
+    return request
+
 @app.route("/reindex", methods=["GET"])
 def reindex():
     instance.reindex()

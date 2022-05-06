@@ -85,8 +85,8 @@ class CVAE(tf.keras.Model):
             self.encoder = tf.keras.models.load_model("enc.h5")
             print("model loaded")
 
-        self.encoder.summary()
-        tf.keras.utils.plot_model(self.encoder, "encoder.png", show_shapes=True)
+        # self.encoder.summary()
+        # tf.keras.utils.plot_model(self.encoder, "encoder.png", show_shapes=True)
 
         # assert False
         if decoder:
@@ -198,8 +198,8 @@ class CVAE(tf.keras.Model):
 
             else:
                 self.decoder = tf.keras.models.load_model("dec.h5")
-            self.decoder.summary()
-            tf.keras.utils.plot_model(self.decoder, "decoder.png", show_shapes=True)
+            # self.decoder.summary()
+            # tf.keras.utils.plot_model(self.decoder, "decoder.png", show_shapes=True)
             self.decoder.training = training
         self.encoder.training = training
 
