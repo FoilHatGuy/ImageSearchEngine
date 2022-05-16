@@ -36,9 +36,9 @@ def generate_sample(predictions):
 optimizer = tf.keras.optimizers.Adam(1e-4)
 
 epochs = 200
-start_epoch = 107
+start_epoch = 1
 # set the dimensionality of the latent space to a plane for visualization later
-num_examples_to_generate = 16
+num_examples_to_generate = 15
 
 # keeping the random vector constant for generation (prediction) so
 # it will be easier to see the improvement.
@@ -47,10 +47,10 @@ random_vector_for_generation = tf.random.normal(
         shape=[num_examples_to_generate, model.latent_dim])
 
 train_size = 1000
-batch_size = 16
-test_size = 200
+batch_size = 20
+test_size = 100
 
-datadir = "../../data/train_set"
+datadir = "../../data/training"
 print(os.path.abspath(datadir))
 
 dataset_params = {"directory":  datadir,
@@ -91,7 +91,7 @@ images_dataset = images_dataset.cache().repeat(20).map(
         lambda image: tf.image.random_flip_left_right(image)
 ).map(
         lambda image: tf.image.random_contrast(image, lower=0.7, upper=1)
-).shuffle(500)
+).shuffle(400)
 # #
 # for test_sample in images_dataset.take(1):
 #     print(test_sample)

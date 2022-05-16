@@ -39,7 +39,7 @@ class ServerDetectorInterface:
     def search(self, request, testing=False):
         # JSON = request.get_json()
         # print(request.form)
-        name = int(datetime.datetime.utcnow().timestamp() * 1000000) + random.randint(0, 1000)
+        name = str(int(datetime.datetime.utcnow().timestamp() * 1000000)) + str(random.randint(0, 1000))
         f = request.files['file']
         response = {}
         if f:

@@ -4,6 +4,8 @@
         "workingFolder": "./data/rusmuseum",
         "localDBFolder": "./data/detData",
         "tempFolder": "./data/temp",
-        "host": "192.168.10.35",
+        "host": "localhost",
+        "hostl": "192.168.3.139",
+        "hostf": "192.168.197.181",
         "numOfBest": 5
     }

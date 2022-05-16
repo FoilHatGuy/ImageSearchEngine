@@ -52,30 +52,107 @@ class CVAE(tf.keras.Model):
     def __init__(self, decoder=True, training=False):
         super(CVAE, self).__init__()
         # latent_dim = kwargs["latent_dim"]
-        self.latent_dim = 500
+        self.latent_dim = 300
         if "enc.h5" not in os.listdir('.'):
 
             input_layer = tf.keras.Input(shape=(256, 256, 3))
 
-            inception_block1 = inception(input_layer, 1)
+            x1 = tf.keras.layers.Conv2D(
+                    filters=8, kernel_size=1, strides=1, activation='selu', padding="same")(input_layer)
+            x2 = tf.keras.layers.Conv2D(
+                    filters=24, kernel_size=3, strides=1, activation='selu', padding="same")(input_layer)
+            x = tf.keras.layers.Concatenate()([x1, x2])
 
+            b1 = tf.keras.layers.AveragePooling2D(
+                    pool_size=4, strides=None, padding='same', data_format=None)(x)
+
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=4, strides=2, activation='selu', padding="same")(x)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=32, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
+
+            b3 = tf.keras.layers.Conv2D(
+                    filters=32, kernel_size=2, strides=2, activation='selu', padding="same")(x)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=64, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+
+            comb_out = tf.keras.layers.Concatenate()([b1,
+                                                      # b2,
+                                                      b3])
             x = tf.keras.layers.Dropout(
-                    .4, noise_shape=None, seed=13029)(inception_block1)
+                    .4, noise_shape=None, seed=13029)(comb_out)
 
-            inception_block2 = inception(x, 2)
+            # 2nd
+            b1 = tf.keras.layers.AveragePooling2D(
+                    pool_size=4, strides=None, padding='same', data_format=None)(x)
+            #
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=32, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
 
+            b3 = tf.keras.layers.Conv2D(
+                    filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=32, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=48, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+
+            comb_out = tf.keras.layers.Concatenate()([b1,
+                                                      # b2,
+                                                      b3])
             x = tf.keras.layers.Dropout(
-                    .4, noise_shape=None, seed=13029)(inception_block2)
+                    .4, noise_shape=None, seed=13029)(comb_out)
 
-            inception_block3 = inception(x, 3)
+            # 3rd
+            b1 = tf.keras.layers.AveragePooling2D(
+                    pool_size=4, strides=None, padding='same', data_format=None)(x)
+            #
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=32, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
 
-            # x = tf.keras.layers.Dropout(
-            #         .4, noise_shape=None, seed=13029)(inception_block3)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=32, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=64, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
 
-            x = tf.keras.layers.Conv2D(
-                    filters=256, kernel_size=3, strides=1, activation='relu', padding="valid")(inception_block3)
-            # x = tf.keras.layers.Conv2D(
-            #         filters=512, kernel_size=3, strides=1, activation='relu', padding="valid")(x)   # 2
+            comb_out = tf.keras.layers.Concatenate()([b1,
+                                                      # b2,
+                                                      b3])
+            x = tf.keras.layers.Dropout(
+                    .4, noise_shape=None, seed=13029)(comb_out)
+
+            # 4th
+            b1 = tf.keras.layers.AveragePooling2D(
+                    pool_size=4, strides=None, padding='same', data_format=None)(x)
+            #
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=16, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
+            # b2 = tf.keras.layers.Conv2D(
+            #         filters=32, kernel_size=4, strides=2, activation='selu', padding="same")(b2)
+
+            b3 = tf.keras.layers.Conv2D(
+                    filters=16, kernel_size=1, strides=1, activation='selu', padding="same")(x)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=32, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+            b3 = tf.keras.layers.Conv2D(
+                    filters=64, kernel_size=2, strides=2, activation='selu', padding="same")(b3)
+
+            comb_out = tf.keras.layers.Concatenate()([b1,
+                                                      # b2,
+                                                      b3])
+            x = tf.keras.layers.Dropout(
+                    .4, noise_shape=None, seed=13029)(comb_out)
 
             x = tf.keras.layers.Flatten()(x)
             output_layer = tf.keras.layers.Dense(self.latent_dim + self.latent_dim)(x)
@@ -86,7 +163,7 @@ class CVAE(tf.keras.Model):
             print("model loaded")
 
         # self.encoder.summary()
-        # tf.keras.utils.plot_model(self.encoder, "encoder.png", show_shapes=True)
+        tf.keras.utils.plot_model(self.encoder, "encoder.png", show_shapes=True)
 
         # assert False
         if decoder:
@@ -159,11 +236,11 @@ class CVAE(tf.keras.Model):
                 x = tf.keras.layers.Conv2DTranspose(  # 6
                         filters=48, kernel_size=3, strides=1, padding='valid', activation='relu')(x)
                 x = tf.keras.layers.Conv2DTranspose(  # 6
-                        filters=32, kernel_size=3, strides=1, padding='valid', activation='relu')(x) # 16?
+                        filters=32, kernel_size=3, strides=1, padding='valid', activation='relu')(x)  # 16?
                 x = tf.keras.layers.Conv2DTranspose(  # 6
                         filters=32, kernel_size=1, strides=1, padding='valid', activation='relu')(x)
                 x = tf.keras.layers.UpSampling2D(  # 1
-                        size=2, data_format=None, interpolation='bilinear')(x) #32
+                        size=2, data_format=None, interpolation='bilinear')(x)  # 32
                 x = tf.keras.layers.Conv2DTranspose(  # 6
                         filters=32, kernel_size=3, strides=1, padding='same', activation='relu')(x)
                 x = tf.keras.layers.Conv2DTranspose(  # 6
@@ -199,7 +276,7 @@ class CVAE(tf.keras.Model):
             else:
                 self.decoder = tf.keras.models.load_model("dec.h5")
             # self.decoder.summary()
-            # tf.keras.utils.plot_model(self.decoder, "decoder.png", show_shapes=True)
+            tf.keras.utils.plot_model(self.decoder, "decoder.png", show_shapes=True)
             self.decoder.training = training
         self.encoder.training = training
 
@@ -260,4 +337,4 @@ class CVAE(tf.keras.Model):
         optimizer.apply_gradients(zip(gradients, self.trainable_variables))
 
 
-# model = CVAE()
+model = CVAE()

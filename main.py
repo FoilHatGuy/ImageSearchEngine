@@ -31,14 +31,6 @@ def img_load():
                            detectors=instance.getDets())
 
 
-@app.route("/testing", methods=["POST"])
-def testing():
-    # print(request)
-    # return {"I": "Love you"}
-    response = instance.search(request, testing=True)
-    return str(response)
-
-
 @app.route("/check", methods=["GET", "POST"])
 def check():
     return request
@@ -57,6 +49,14 @@ def index():
                            # ids=instance.catalogue,
                            IMG_SRC=instance.config['workingFolder'],
                            detectors=instance.getDets())
+
+
+@app.route("/testing", methods=["POST"])
+def testing():
+    # print(request)
+    # return {"I": "Love you"}
+    response = instance.search(request, testing=True)
+    return str(response)
 
 
 if __name__ == "__main__":

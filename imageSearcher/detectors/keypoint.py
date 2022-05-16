@@ -23,6 +23,7 @@ class DetectorKP:
             self.reindex(data)
         self.db = self.db.set_index("id")
         # self.db.applymap(lambda x: x.astype(np.uint8))
+        print("KP:")
         self.db.info(memory_usage="deep")
 
         FLANN_INDEX_KDTREE = 1
@@ -52,10 +53,29 @@ class DetectorKP:
         new_data.to_pickle(self.csvName)
         self.db = new_data
         print("KP Reindex done!")
+        print("KP:")
+        self.db.info(memory_usage="deep")
+
 
     def search(self, img):
         batch = self.findInDB(self.searchKP(img))
         # print("batch", batch)
+
+        # img1 = cv.imread(os.path.normpath(os.path.join(self.config["cwd"],
+        #                                                self.config["workingFolder"],
+        #                                                "4",
+        #                                                batch[0][0] + ".jpeg")))
+        # kp1, des1 = self.kpDescriptor.detectAndCompute(img1, None)
+        # kp2, des2 = self.kpDescriptor.detectAndCompute(img, None)
+        # matches = self.matcher.knnMatch(des1, des2, k=2)
+        # good = []
+        # for m, n in matches:
+        #     if m.distance < 0.75 * n.distance:
+        #         good.append([m])
+        # img3 = cv.drawMatchesKnn(img1, kp1, img, kp2, good, None, flags=cv.DrawMatchesFlags_DEFAULT)
+        # cv.imshow("KP", img3)
+        # cv.waitKey()
+
         return {#"bestBatch": list([x[0] for x in batch[:self.config["numOfBest"]]]),
                 "best": batch[0][0],
                 "confidence": batch[0][1]}

@@ -26,8 +26,9 @@ class ImageSearcher:
         self.config = config
         self.preprocessing = preprocessing.imageSearchAndRestore
         self.detectors = {"AE": det.autoencoder.DetectorAE(self.config, self.data),
-                          # "TM": det.template.DetectorTM(self.config, self.data),
-                          "KP": det.keypoint.DetectorKP(self.config, self.data)}
+                          "TM": det.template.DetectorTM(self.config, self.data),
+                          "KP": det.keypoint.DetectorKP(self.config, self.data)
+        }
 
     def reindex(self):
         for val in self.detectors.values():
